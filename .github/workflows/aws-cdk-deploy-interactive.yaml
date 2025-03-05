@@ -1,0 +1,40 @@
+# .github/workflows/aws-cdk-deploy-interactive.yaml
+name: DevOps Deploy CDK Interactive
+
+on:
+  push:
+    branches:
+      # We have to specify the branch name here for the workflow to run in dispatch mode; do not modify (yet)
+      - '910dcbb6-a53d-4275-b5d7-9b4b0d8a90d4'
+  workflow_dispatch:
+    inputs:
+      stackName:
+        type: string
+        description: "The stack identifier to deploy; example: devops-*"
+        required: true
+      environment:
+        type: choice
+        description: "The environment to deploy to: 'default' is currently the only choice."
+        default: "default"
+        required: true
+        options:
+          - "default"
+      AWS_REGION:
+        type: string
+        description: "The AWS region to deploy to; example: us-west-2"
+        default: "us-west-2"
+        required: true
+
+# Permission can be added at job level or workflow level
+permissions:
+  id-token: write  # This is required for requesting the JWT
+  contents: read  # This is required for actions/checkout
+
+jobs:
+  WorkflowCall:
+    uses: ./.github/workflows/aws-cdk-deploy-reusable.yaml
+    with:
+      stackName: ${{ github.event.inputs.stackName }}
+      environment: ${{ github.event.inputs.environment }}
+      AWS_REGION: ${{ github.event.inputs.AWS_REGION }}
+    secrets: inherit

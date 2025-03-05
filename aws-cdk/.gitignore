@@ -5,4 +5,10 @@ node_modules
 
 # CDK asset staging directory
 .cdk.staging
-*.out
+cdk.out
+
+# IDEs
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace

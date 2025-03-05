@@ -1,0 +1,148 @@
+# .github/workflows/aws-cdk-deploy-reusable.yaml
+name: DevOps Deploy CDK Reusable
+
+on:
+  workflow_call:
+    inputs:
+      stackName:
+        type: string
+        description: "The stack identifier to deploy; example: devops-*"
+        required: true
+      environment:
+        type: string
+        description: "The environment to deploy to: 'default' is currently the only choice."
+        default: "default"
+        required: true
+      AWS_REGION:
+        type: string
+        description: "The AWS region to deploy to; example: us-west-2"
+        default: "us-west-2"
+        required: true
+
+env:
+  ARTIFACTS_BASE: "${{ github.workspace }}/artifacts"
+  ARTIFACTS_DIR: "${{ github.workspace }}/artifacts/artifact-${{ github.run_id }}"
+  ARTIFACTS_NAME: "artifact-${{ github.run_id }}"
+  CDK_DEPLOY_DIR: "${{ github.workspace }}/devops-aws-cdk"
+  npm_config_cache: ".npm-cache"
+
+# Permission can be added at job level or workflow level
+permissions:
+  id-token: write  # This is required for requesting the JWT
+  contents: read  # This is required for actions/checkout
+
+jobs:
+
+  RunAWSCDKDeploy:
+
+    runs-on: ubuntu-latest
+
+    environment: ${{ inputs.environment }}
+
+    steps:
+
+      - name: Verify Inputs
+        # if: ${{ !always() }}
+        run: |
+          echo "ARTIFACTS_DIR: ${{ env.ARTIFACTS_DIR }}"
+          echo "ARTIFACTS_NAME: ${{ env.ARTIFACTS_NAME }}"
+          echo "AWS_REGION: ${{ inputs.AWS_REGION }}"
+          echo "CDK_DEPLOY_DIR: ${{ env.CDK_DEPLOY_DIR }}"
+          echo "GITHUB_ACTOR: ${{ github.actor }}"
+          echo "GITHUB_BASE_REF: ${{ github.base_ref }}"
+          echo "GITHUB_EVENT_NAME: ${{ github.event_name }}"
+          echo "GITHUB_EVENT_PATH: ${{ github.event_path }}"
+          echo "GITHUB_HEAD_REF: ${{ github.head_ref }}"
+          echo "GITHUB_IMAGE_VERSION: $(uname -a)"
+          echo "GITHUB_JOB: ${{ github.job }}"
+          echo "GITHUB_REPOSITORY: ${{ github.repository }}"
+          echo "GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}"
+          echo "GITHUB_RUN_ID: ${{ github.run_id }}"
+          echo "GITHUB_RUN_NUMBER: ${{ github.run_number }}"
+          echo "GITHUB_WORKFLOW: ${{ github.workflow }}"
+          echo "GITHUB_WORKSPACE: ${{ github.workspace }}"
+          echo "environment: ${{ inputs.environment }}"
+          echo "stackName: ${{ inputs.stackName }}"
+
+      - uses: actions/checkout@main
+
+      - name: Create Directories for Artifacts, Logs, and Cache
+        run: |
+          mkdir -pv ${{ env.ARTIFACTS_DIR }}
+          mkdir -pv ${{ env.npm_config_cache }}
+
+      # See...
+      # https://github.com/actions/setup-node
+      # https://nodejs.org/en/about/previous-releases
+      - uses: actions/setup-node@main
+        with:
+          # Version Spec of the version to use in SemVer notation.
+          # It also emits such aliases as lts, latest, nightly and canary builds
+          # Examples: 12.x, 10.15.1, >=10.15.0, lts/Hydrogen, 16-nightly, latest, node
+          node-version: "lts/jod" # "22.x"
+
+
+      - uses: actions/cache/restore@main
+        id: npm-cache-restore
+        with:
+          path: ${{ env.npm_config_cache }}
+          key: ${{ env.npm_config_cache }}
+
+      - name: Install NPM Dependencies
+        run: |
+          cd ${{ env.CDK_DEPLOY_DIR }}
+          echo "Node Version: $(node --version)" | tee ${{ env.ARTIFACTS_DIR }}/node-version.log
+          echo "NPM Version: $(npm --version)" | tee ${{ env.ARTIFACTS_DIR }}/npm-version.log
+          npm install \
+            --cache ${{ env.npm_config_cache }} \
+            --no-package-lock \
+            --prefer-offline \
+            --no-audit \
+            --no-save \
+            | tee ${{ env.ARTIFACTS_DIR }}/npm-install.log
+
+      - uses: actions/cache/save@main
+        id: npm-cache-save
+        with:
+          path: ${{ env.npm_config_cache }}
+          key: ${{ env.npm_config_cache }}
+
+      # See...
+      # https://github.com/aws-actions/configure-aws-credentials
+      # https://aws.amazon.com/blogs/security/use-iam-roles-to-connect-github-actions-to-actions-in-aws/
+      - uses: aws-actions/configure-aws-credentials@main
+        with:
+          # Change to reflect your IAM role’s ARN
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          # Must satisfy regular expression pattern: [\w+=,.@-]*
+          role-session-name: "${{ github.run_id }}@github.com"
+          aws-region: ${{ inputs.AWS_REGION || 'us-west-2' }}
+          retry-max-attempts: 3
+
+      - name: AWS Security Token Service (STS) Get Caller Identity
+        # if: ${{ !always() }}
+        run: |
+          aws sts get-caller-identity | tee ${{ env.ARTIFACTS_DIR }}/sts-get-caller-identity.log
+
+      - name: Deploy AWS CDK stacks
+        run: |
+          cd ${{ env.CDK_DEPLOY_DIR }}
+          npx aws-cdk deploy --version | tee ${{ env.ARTIFACTS_DIR }}/cdk-deploy-version.log
+          npx aws-cdk deploy ${{ inputs.stackName }} \
+            "${{ inputs.stackName }}" \
+            --context env="${{ inputs.environment }}" \
+            --require-approval never \
+            --verbose \
+            --json \
+            --ci \
+            | tee ${{ env.ARTIFACTS_DIR }}/cdk-deploy.log
+
+      # See https://github.com/actions/upload-artifact
+      - uses: actions/upload-artifact@main
+        if: ${{ !cancelled() }}
+        with:
+          name: ${{ env.ARTIFACTS_NAME }}-${{ github.JOB }}
+          path: ${{ env.ARTIFACTS_BASE }}
+          # 0 (store) through 9 (maximum) are also available, defaults to 6
+          compression-level: 9
+          retention-days: 1

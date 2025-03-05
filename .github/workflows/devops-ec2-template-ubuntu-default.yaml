@@ -1,0 +1,23 @@
+# .github/workflows/devops-ec2-template-ubuntu-prod.yaml
+name: devops-ec2-template-ubuntu prod
+
+on:
+  push:
+    branches:
+      # We have to specify the branch name here for the workflow to run in dispatch mode; do not modify (yet)
+      - '910dcbb6-a53d-4275-b5d7-9b4b0d8a90d4'
+  workflow_dispatch:
+
+# Permission can be added at job level or workflow level
+permissions:
+  id-token: write  # This is required for requesting the JWT
+  contents: read  # This is required for actions/checkout
+
+jobs:
+  WorkflowCall:
+    uses: ./.github/workflows/aws-cdk-deploy-reusable.yaml
+    with:
+      stackName: "devops-ec2-template-ubuntu"
+      environment: "default"
+      AWS_REGION: "us-west-2"
+    secrets: inherit
