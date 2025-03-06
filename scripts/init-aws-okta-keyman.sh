@@ -19,26 +19,23 @@ fi
 
 # Set the AWS Okta Keyman application name from env var
 if [[ -z ${AWS_ACCT} ]]; then
-  echo "AWS_ACCT env var is not set or passed as an input parameter; ex. 'example-1', 'example-2'."
+  echo "AWS_ACCT env var is not set or passed as an input parameter; ex. 'default'"
   return 1
 fi
 
 # Set the AWS Okta Keyman application IDs
-AWS_ACCT_EXAMPLE_1='0oa2qismlwkEwSj9X357/272'
-AWS_ACCT_EXAMPLE_2='0oa2tn3pcpcCk52Yr357/272'
+AWS_ACCT_DEFAULT='j9X3570oawkEwS2qisml/999'
 
 # Set the AWS Okta Keyman application id based on the AWS_ACCT
-if [[ ${AWS_ACCT} == 'example-2' ]]; then
-  AWS_OKTA_APP_ID=${AWS_ACCT_EXAMPLE_1}
-elif [[ ${AWS_ACCT} == 'example-2' ]]; then
-  AWS_OKTA_APP_ID=${AWS_ACCT_EXAMPLE_2}
+if [[ ${AWS_ACCT} == 'default' ]]; then
+  AWS_OKTA_APP_ID=${AWS_ACCT_DEFAULT}
 else
-  echo "Invalid AWS_ACCT value; ex. 'example-1', 'example-2'"
+  echo "Invalid AWS_ACCT value; ex. 'default'"
   return 1
 fi
 
 # AWS Okta Keyman login
-AWS_OKTA_KEYMAN_ARGS='--org example'
+AWS_OKTA_KEYMAN_ARGS='--org default'
 AWS_OKTA_KEYMAN_ARGS+=" --username ${USER}"
 # AWS_OKTA_KEYMAN_ARGS+=' --password_cache'
 AWS_OKTA_KEYMAN_ARGS+=" --region ${AWS_REGION}"
