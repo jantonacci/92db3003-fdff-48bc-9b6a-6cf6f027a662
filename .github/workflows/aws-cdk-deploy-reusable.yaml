@@ -113,7 +113,7 @@ jobs:
       - uses: aws-actions/configure-aws-credentials@main
         with:
           # Change to reflect your IAM role’s ARN
-          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           # Must satisfy regular expression pattern: [\w+=,.@-]*
           role-session-name: "${{ github.run_id }}@github.com"
           aws-region: ${{ inputs.AWS_REGION || 'us-west-2' }}
@@ -141,7 +141,7 @@ jobs:
       - uses: actions/upload-artifact@main
         if: ${{ !cancelled() }}
         with:
-          name: ${{ env.ARTIFACTS_NAME }}-${{ github.JOB }}
+          name: ${{ env.ARTIFACTS_NAME }}
           path: ${{ env.ARTIFACTS_BASE }}
           # 0 (store) through 9 (maximum) are also available, defaults to 6
           compression-level: 9
