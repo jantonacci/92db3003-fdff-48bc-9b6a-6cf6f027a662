@@ -1,5 +1,5 @@
 # .github/workflows/devops-ec2-template-ubuntu-prod.yaml
-name: devops-ec2-template-ubuntu prod
+name: devops-ec2-template-ubuntu-default
 
 on:
   push:
