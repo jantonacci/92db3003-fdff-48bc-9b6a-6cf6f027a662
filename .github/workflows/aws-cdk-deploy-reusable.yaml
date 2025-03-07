@@ -23,7 +23,7 @@ env:
   ARTIFACTS_BASE: "${{ github.workspace }}/artifacts"
   ARTIFACTS_DIR: "${{ github.workspace }}/artifacts/artifact-${{ github.run_id }}"
   ARTIFACTS_NAME: "artifact-${{ github.run_id }}"
-  CDK_DEPLOY_DIR: "${{ github.workspace }}/devops-aws-cdk"
+  CDK_DEPLOY_DIR: "${{ github.workspace }}/aws-cdk"
   npm_config_cache: ".npm-cache"
 
 # Permission can be added at job level or workflow level
