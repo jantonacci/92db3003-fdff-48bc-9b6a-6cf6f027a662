@@ -23,6 +23,7 @@ env:
   ARTIFACTS_BASE: "${{ github.workspace }}/artifacts"
   ARTIFACTS_DIR: "${{ github.workspace }}/artifacts/artifact-${{ github.run_id }}"
   ARTIFACTS_NAME: "artifact-${{ github.run_id }}"
+  AWS_ROLE_ARN: "${{ secrets.AWS_ROLE_ARN }}"
   CDK_DEPLOY_DIR: "${{ github.workspace }}/aws-cdk"
   npm_config_cache: ".npm-cache"
 
@@ -47,6 +48,7 @@ jobs:
           echo "ARTIFACTS_DIR: ${{ env.ARTIFACTS_DIR }}"
           echo "ARTIFACTS_NAME: ${{ env.ARTIFACTS_NAME }}"
           echo "AWS_REGION: ${{ inputs.AWS_REGION }}"
+            echo "AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}"
           echo "CDK_DEPLOY_DIR: ${{ env.CDK_DEPLOY_DIR }}"
           echo "GITHUB_ACTOR: ${{ github.actor }}"
           echo "GITHUB_BASE_REF: ${{ github.base_ref }}"
