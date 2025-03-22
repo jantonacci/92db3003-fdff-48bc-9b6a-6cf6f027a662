@@ -2,7 +2,7 @@
   "name": "ami-ubuntu-skore",
   "version": "0.1.0",
   "bin": {
-    "ec2-template-skore": "bin/ec2-ubuntu-skore.js"
+    "infrastructure": "bin/infrastructure.js"
   },
   "scripts": {
     "build": "tsc",

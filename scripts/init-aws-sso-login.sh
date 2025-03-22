@@ -16,7 +16,7 @@ if [[ -z ${AWS_PROFILE} ]]; then
   export AWS_PROFILE='default'
 fi
 
-export AWS_SSO_LOGIN_SCRIPT="/usr/local/bin/aws sso login --profile ${AWS_PROFILE} --region ${AWS_REGION}"
+export AWS_SSO_LOGIN_SCRIPT="aws sso login --profile ${AWS_PROFILE} --region ${AWS_REGION}"
 
 echo "Running: ${AWS_SSO_LOGIN_SCRIPT}"
 ${AWS_SSO_LOGIN_SCRIPT}

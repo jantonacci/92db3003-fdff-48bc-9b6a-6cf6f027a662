@@ -4,8 +4,7 @@ import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as path from "path";
 import { IEc2InstanceRecord, IEc2SubnetRecord } from "./interfaces";
 
-export const AWS_CDK_STACK_BASENAME = "devops";
-export const AWS_CDK_STACK_DESCRIPTION = "EC2 Instance for Ubuntu";
+export const AWS_CDK_STACK_BASENAME = "project";
 export const AWS_EC2_USERDATA_DIR = path.join(
   __dirname,
   "..",
@@ -19,6 +18,13 @@ export const SHEBANG = "#!/usr/bin/bash -vx";
 export enum AWS_CDK_STACK_NAMES {
   EC2_INSTANCE_UBUNTU = `${AWS_CDK_STACK_BASENAME}-ec2-instance-ubuntu`,
   EC2_TEMPLATE_UBUNTU = `${AWS_CDK_STACK_BASENAME}-ec2-template-ubuntu`,
+  VPC_CFN = `${AWS_CDK_STACK_BASENAME}-vpc-cfn`,
+}
+
+export enum AWS_CDK_STACK_DESCRIPTIONS {
+    EC2_INSTANCE_UBUNTU = "EC2 Instance for Ubuntu",
+    EC2_TEMPLATE_UBUNTU = "EC2 Template for Ubuntu",
+    VPC_CFN = "VPC for CloudFoundation stacks"
 }
 
 export enum AWS_AZS {
