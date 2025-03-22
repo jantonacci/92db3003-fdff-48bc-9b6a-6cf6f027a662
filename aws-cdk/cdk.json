@@ -84,6 +84,8 @@
     "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true
   },
   "stacks": [
-    "devops-ec2-ubuntu"
+    "project-ec2-instance-ubuntu",
+    "project-ec2-template-ubuntu",
+    "project-vpc-cfn"
   ]
 }

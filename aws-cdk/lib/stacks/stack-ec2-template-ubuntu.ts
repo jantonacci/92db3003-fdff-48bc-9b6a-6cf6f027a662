@@ -54,7 +54,7 @@ export class StackEc2TemplateUbuntu extends cdk.Stack {
     new ResourceEc2Template(this, ec2InstanceId, config);
 
     // Pretty print the stack config
-    console.log(getCurrentTimestamp(), "Stack configuration:");
-    prettyPrintJson(config);
+    // console.log(getCurrentTimestamp(), "Stack configuration:");
+    // prettyPrintJson(config);
   }
 }

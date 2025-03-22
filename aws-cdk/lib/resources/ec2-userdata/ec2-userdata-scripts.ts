@@ -39,8 +39,7 @@ export class Ec2UserdataPkgUbuntu {
       "sudo apt-get update",
       "sudo apt-get -y install build-essential",
       "sudo apt-get -y upgrade",
-      "sudo apt-get -y install python3-pip python3-venv",
-      'sudo pip3 --break-system-packages install "conan>2"',
+      "sudo apt-get -y install python3-pip python3-venv"
     ];
 
     this.commandsString = cmdsStringNewLine(this.commands);
@@ -50,28 +49,17 @@ export class Ec2UserdataPkgUbuntu {
 export class Ec2UserdataSsh {
   readonly commands: string[];
   readonly commandsString: string;
-  constructor(user: string) {
-    const authorizedKeys = catTextFiles(AWS_EC2_USERDATA.SSH_PUBLIC_KEYS);
-    console.log(
-      getCurrentTimestamp(),
-      "authorized_keys string length:",
-      authorizedKeys.length,
-    );
-    const authorizedKeysB64 = encodeStringToBase64(authorizedKeys);
-    console.log(
-      getCurrentTimestamp(),
-      "authorized_keys base64 length:",
-      authorizedKeysB64.length,
-    );
+  constructor(userName: string) {
+    const authorizedKeysB64 = encodeStringToBase64(catTextFiles(AWS_EC2_USERDATA.SSH_PUBLIC_KEYS));
 
     this.commands = [
-      "# Ec2UserdataSsh",
-      `sudo mkdir --parents --verbose ~${user}/.ssh/`,
-      `sudo touch ~${user}/.ssh/authorized_keys`,
-      `echo '${authorizedKeysB64}' | base64 --decode | sudo tee -a ~${user}/.ssh/authorized_keys`,
-      `sudo chmod 700 ~${user}/.ssh`,
-      `sudo chmod 600 ~${user}/.ssh/*`,
-      `sudo chown -R ${user} ~${user}/.ssh`,
+      "# Ec2userNamedataSsh",
+      `sudo mkdir --parents --verbose ~${userName}/.ssh/`,
+      `sudo touch ~${userName}/.ssh/authorized_keys`,
+      `echo '${authorizedKeysB64}' | base64 --decode | sudo tee -a ~${userName}/.ssh/authorized_keys`,
+      `sudo chmod 700 ~${userName}/.ssh`,
+      `sudo chmod 600 ~${userName}/.ssh/*`,
+      `sudo chown -R ${userName} ~${userName}/.ssh`,
     ];
 
     this.commandsString = cmdsStringNewLine(this.commands);
@@ -81,7 +69,7 @@ export class Ec2UserdataSsh {
 export class Ec2UserdataDocker {
   readonly commands: string[];
   readonly commandsString: string;
-  constructor(user: string) {
+  constructor(userName: string) {
     const dockerDaemonJson = {
       "log-driver": "local",
       "log-opts": {
@@ -103,7 +91,7 @@ export class Ec2UserdataDocker {
       "sudo curl -fsSL https://get.docker.com -o ${DOCKER_SCRIPT}",
       "sudo sh ${DOCKER_SCRIPT} | tee ${DOCKER_LOG}",
       "sudo groupadd docker",
-      `sudo usermod -aG docker ${user}`,
+      `sudo usermod -aG docker ${userName}`,
       `echo '${dockerDaemonJsonB64}' | base64 --decode | sudo tee -a /etc/docker/daemon.json`,
       "sudo systemctl stop docker.service docker.socket containerd.service",
       "sudo systemctl enable docker.service",

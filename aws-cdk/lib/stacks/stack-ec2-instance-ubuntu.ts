@@ -65,7 +65,7 @@ export class StackEc2InstanceUbuntu extends cdk.Stack {
     });
 
     // Pretty print the stack config
-    console.log(getCurrentTimestamp(), "Stack configuration:");
-    prettyPrintJson(config);
+    // console.log(getCurrentTimestamp(), "Stack configuration:");
+    // prettyPrintJson(config);
   }
 }

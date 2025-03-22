@@ -11,7 +11,7 @@ export const AWS_EC2_USERDATA_DIR = path.join(
   "resources",
   "ec2-userdata",
 );
-export const AWS_EC2_USERDATA_WORKING_DIR = "/tmp/cloud-init";
+export const AWS_EC2_USERDATA_WORKING_DIR = "/var/tmp/cloud-init";
 export const AWS_REGION = "us-west-2";
 export const SHEBANG = "#!/usr/bin/bash -vx";
 
