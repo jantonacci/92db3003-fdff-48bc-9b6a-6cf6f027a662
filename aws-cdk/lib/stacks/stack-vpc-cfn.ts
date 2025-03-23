@@ -10,11 +10,11 @@ export class StackVpcCfn extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // Create a VPC with default CIDR and subnets across all available AZs in us-west-2
-    const vpc = new ec2.Vpc(this, 'DefaultVpc', {
-      maxAzs: 4, // Default is all AZs in the region
-      natGateways: 1, // Update as per your requirement
-    });
+    const environment = scope.node.tryGetContext("env") || AWS_ENVS.DEFAULT;
+    // Get the configuration
+    const config = getConfigVpc(environment, props);
+
+    const vpc = new ResourceVpcCfn(scope, 'Vpc', props: config)
 
     // Output the VPC ID
     new cdk.CfnOutput(this, 'VpcId', { value: vpc.vpcId });

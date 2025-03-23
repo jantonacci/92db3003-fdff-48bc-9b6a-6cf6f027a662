@@ -56,3 +56,31 @@ export function getConfigUbuntu(
   // Merge the objects using the spread syntax
   return { ...customProps, ...props };
 }
+
+export function getConfigVpc(
+  environment: string,
+  props: StackProps,
+): IVpcConfig {
+  const account = props.env?.account || AWS_ACCOUNTS.DEFAULT;
+
+  if (!validateEnvironment(environment, account)) {
+    // throw new Error(`AWS account ${account} is not set or the credentials are expired.`);
+    console.log(`Warning: AWS account ${account} is unknown or the credentials are expired?`);
+  }
+
+  const region = props.env?.region || AWS_REGION;
+  const stackName =
+    props.stackName || `${AWS_CDK_STACK_BASENAME}-${generateRandomAlphanumericIdCrypto()}`;
+
+  const customProps: VpcProps = {
+    environment: environment,
+    stackNameCamel:
+      camelCaseString(stackName) + capitalizeFirstLetter(environment),
+    stackNameClean: sanitizeStrings([stackName, environment]),
+    vpcName: getVpcName(environment),
+    vpcSecurityGroupName: getSecurityGroupName(environment),
+  };
+
+  // Merge the objects using the spread syntax
+  return { ...customProps, ...props };
+}

@@ -30,11 +30,12 @@ fi
 
 export SCRIPTS_DIR="${REPO_ROOT}/scripts"
 
-TARGETS="init-node-env.sh init-py-venv.sh init-aws-sso-login.sh" # Excluding init-aws-okta-keyman.sh
+# Excluding init-aws-okta-keyman.sh init-py-venv.sh
+TARGETS="init-node-env.sh init-aws-sso-login.sh"
 RETURN_CODE=0
 for TARGET in ${TARGETS}; do
   echo "Sourcing target file: ${TARGET}"
-  source ${SCRIPTS_DIR}/${TARGET}
+  source "${SCRIPTS_DIR}/${TARGET}"
   RETURN_CODE_TARGET=$?
   echo "Sourced target file ${TARGET} returned exit code ${RETURN_CODE_TARGET}"
   if [[ ${RETURN_CODE_TARGET} -ne 0 ]]; then

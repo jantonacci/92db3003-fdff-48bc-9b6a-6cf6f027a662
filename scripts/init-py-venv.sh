@@ -1,6 +1,5 @@
 # source this script to activate the virtual environment
 
-
 # Get the root directory of the repository
 if [[ -z "${REPO_ROOT}" ]]; then
   export REPO_ROOT=$(git rev-parse --show-toplevel)
